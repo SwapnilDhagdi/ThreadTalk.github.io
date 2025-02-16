@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+    <link
+    href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
+    rel="stylesheet"
+    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <div class="overlay " style="display: none;">
+       
+<svg class="pl" width="240" height="240" viewBox="0 0 240 240">
+	<circle class="pl__ring pl__ring--a" cx="120" cy="120" r="105" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 660" stroke-dashoffset="-330" stroke-linecap="round"></circle>
+	<circle class="pl__ring pl__ring--b" cx="120" cy="120" r="35" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 220" stroke-dashoffset="-110" stroke-linecap="round"></circle>
+	<circle class="pl__ring pl__ring--c" cx="85" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+	<circle class="pl__ring pl__ring--d" cx="155" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+</svg>
+    </div>
+    <nav class="nav_bar">
+        <div class="nav-logo">
+            <div class="nav-img">
+            
+            </div>
+            <div class="nav-logo-name">
+               ThreadTalk
+            </div>
+        </div>
+        <div class="search_bar">
+            <form action="submit"> 
+                <input type="text" placeholder="search title" class="title_input"> 
+                <div> 
+                    <ul class="title_suggestion">
+                    </ul>
+                </div>
+            </form>
+        </div>
+        <div class="info">
+            <div class="notification_btn border">
+                Notification <i class="ri-notification-3-fill"></i>
+            </div>
+            <div class="dropdown">
+                <button class="dropbtn">Accounts</button>
+                <div class="dropdown-content">
+                <a href="/myaccount">My posts</a>
+                <a href="#">Link</a>
+                <a href="/logout">LogOut</a>
+                </div>
+              </div>
+        </div>
+    </nav>
+    <div class="pannel">
+        <div class="pannel-toggle border">
+            <p>menu
+            <i class="ri-menu-line"></i></p>  
+        </div> 
+        <button onclick="window.location.href='/c_post'" class="btn btn_post">
+            Create community post
+        </button>
+    </div>
+    <div class="Non_nav_account">
+        <div class="sidebar"> 
+           <div class="sidebar-content">
+                <p>
+                    Communities
+                </p>
+                <input type="text" name="" id="" placeholder="search" autocomplete="off" class="Communities_search">
+                <div class="suggestion"> 
+                    <ul class="suggestion_list">
+                    </ul>
+                </div> 
+               
+          </div>
+         
+        </div>
+    
+        <div class="account">
+           
+                <div class="acc_description">
+                    <h2>
+                        Community Name:-<%=community_data[0].name%>
+                    </h2>
+                    <h3>
+                        Description:-<%=community_data[0].description%>
+                    </h3>
+                </div>  
+     
+           
+        </div>
+        <div class="account_posts-section">
+            <% if(data.length==0){%>
+                <div class="post">
+                    No posts today
+                </div>
+            <%}%>
+            <% for(var i=0 ;i<data.length ;i++) {%>
+            <div class="post" id="<%= data[i].pid%>">
+                <div class="user">
+                    user:-<%=data[i].uid%>
+                
+                 </div>
+                 <div class="title">
+                    Title:- <%=data[i].title%>;
+                 </div>
+                 <div class="description">
+                    <p>
+                        <%=data[i].description%>;
+                    </p>
+                 </div>
+                 <%if(data[i].media){%>
+                 <div class="media">
+                    <img src="<%= data[i].media%> " alt="" class="media_img">
+                 </div>
+                 <%}else{%>
+
+                    <%}%>
+                 <div class="Votes">
+                     <div class="upvote" id="<%=data[i].pid%>"> </div><p class="upvote_count"><%=data[i].likes%></p>
+                     <div class="downvote" id="<%= data[i].pid%>"></div><p class="downvote_count"><%= data[i].dislikes%></p>
+                     <div class="comment" id="<%= data[i].pid%>"></div>  
+                 </div>
+            </div>
+            <%}%>
+        </div>
+        <div class="notification_sidebar">
+
+           
+            <div class="notification_sidebar_content">
+               <p>
+                Notification
+               </p>
+               <ul class="notification"> 
+                <div style="width: 100%;">
+                <% if(data.length==0){%>
+                    <li>
+                        No posts today
+                    </li>
+                <%}%>
+                <% for(var i=0 ;i<data.length ;i++) {%>
+              
+                    <li>
+                        <%= data[i].uid%> Just uploaded <br>
+                        Title:-<%= data[i].title%>
+                    </li>
+                
+                <%}%>
+                </div>
+               </ul>
+           </div>
+          
+        </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="../js/script.js" type="module"> </script><!-- Correct path -->
+</body>
+</html>
