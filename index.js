@@ -147,7 +147,7 @@ app.get("/",async (req, res) => {
     
     const result=await db.query("select * from post");
     const communities=await db.query("select * from community");
-    if(req.session.user)
+    if(currentuser)
     {
         res.render("index",{islogin:true,data:result.rows,community:communities.rows});
         console.log(result.rows);
@@ -172,7 +172,7 @@ app.get("/load_post/:id",async (req,res)=>
 
 app.get("/myaccount",async (req,res)=>
 {
-    if (!req.session.user) {
+    if (!currentuser) {
         console.log("Not found"); // Redirect to login if session is empty
     }
     const result=await db.query(`select * from post join ruser on  post.uid=ruser.username where ruser.username=$1`,[currentuser]);
@@ -224,12 +224,12 @@ app.post("/post",post.single("media"),async(req,res)=>
 }); 
 app.get("/logout",async (req,res)=>
 {
-   req.session.destroy((err)=>{
-        if(err)
-        {
-            console.log("error in destroying session",err);
-        }
-    res.clearCookie("connect.sid");
+//    req.session.destroy((err)=>{
+//         if(err)
+//         {
+//             console.log("error in destroying session",err);
+//         }
+//     res.clearCookie("connect.sid");
     currentuser="";
    res.redirect("/signin");
    });
@@ -323,7 +323,7 @@ app.post("/signin",async (req,res)=>{
     }
     else
     {
-        req.session.user=result.rows[0];
+        currentuser=result.rows[0];
         currentuser=result.rows[0].username;
         console.log("form info",req.body)
         result=await db.query(`select * from post`);
@@ -374,9 +374,9 @@ app.post("/submit",upload.single("media"),async (req,res)=>
           
             await db.query(`insert into ruser(email,passwords,username,avatar) values($1,$2,$3,$4);`,[req.body.email,req.body.password,req.body.username,file_data]);
             var result=await db.query(`select * from ruser where email=$1 and username=$2 and passwords=$3`,[req.body.email,req.body.username,req.body.password]);
-            req.session.user=result.rows[0];
+            currentuser=result.rows[0];
             currentuser=result.rows[0].username;
-            console.log(req.session.user);
+            console.log(currentuser);
             result =await db.query("select * from post");
             const communities=await db.querry("select * from community");
             res.render("index",{islogin:true,data:result.rows,community:communities});
