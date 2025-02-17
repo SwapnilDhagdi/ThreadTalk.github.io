@@ -9,19 +9,20 @@ import multer from "multer";
 import fs from "fs";
 import http from "http";
 import dotenv from "dotenv";
+import connectRedis from "connect-redis";
+import redis from "redis";
 dotenv.config();
-const db=new pg.Client(
-    {
-        user:`${process.env.use}`,
-        host:`${process.env.host}`,
-        port:`${process.env.port}`,
-        password:`${process.env.pass}`,
-        database:`${process.env.dbname}`
-    }
-);
+const db = new pg.Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false,  // This is required for PostgreSQL on Render
+    },
+});
+
 db.connect();
 
 const app = express();
+const port = process.env.PORT || 3000;
 const server = http.createServer(app);
 const io =new Server(server);
 // Define path variables
@@ -31,14 +32,21 @@ var currentuser;
 var currentcommunity;
 app.use(bodyparser.urlencoded({extended:true}));
 // Serve static files (css, js, etc.) from the "public" folder
-app.use(
-    session({
-        secret:" no_secret",
-        resave:false,
-        saveUninitialized:true,
-        cookie:{secure:false},
-    })
-);
+const RedisStore = connectRedis(session);
+const redisClient = redis.createClient({
+  url: process.env.REDIS_URL,  // Make sure you set REDIS_URL in Render environment variables
+  legacyMode: true,            // If using older versions of Redis
+});
+
+redisClient.connect().catch(console.error);
+
+app.use(session({
+    store: new RedisStore({ client: redisClient }),
+    secret: "no_secret",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false },  // Set `secure: true` in production if using HTTPS
+}));
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
@@ -406,7 +414,6 @@ app.get("/form",(req,res)=>
 {
     res.render("form",{title:""});
 });
-const port = 3000;
 server.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });
