@@ -230,9 +230,9 @@ app.get("/logout",async (req,res)=>
 //             console.log("error in destroying session",err);
 //         }
 //     res.clearCookie("connect.sid");
-    currentuser="";
-   res.redirect("/signin");
-   });
+    
+  
+//    });currentuser=""; res.redirect("/signin");
 });
 app.get("/c_post",(req,res)=>{
     console.log("to post");
