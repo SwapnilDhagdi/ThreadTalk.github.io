@@ -8,14 +8,15 @@ import session from "express-session";
 import multer from "multer";
 import fs from "fs";
 import http from "http";
-
+import dotenv from "dotenv";
+dotenv.config();
 const db=new pg.Client(
     {
-        user:"postgres",
-        host:"localhost",
-        port:5432,
-        password:"2004@Swapnil",
-        database:"Reddit"
+        user:`${process.env.use}`,
+        host:`${process.env.host}`,
+        port:`${process.env.port}`,
+        password:`${process.env.pass}`,
+        database:`${process.env.dbname}`
     }
 );
 db.connect();
@@ -221,12 +222,12 @@ app.post("/post",post.single("media"),async(req,res)=>
         const binary=fs.readFileSync(req.file.path);
         const mediabase64=binary.toString("base64");
         const mediadata=`data:image/jpg;base64,${mediabase64}`;
-        await db.query(`insert into post(title,description,uid,media,likes,dislikes) values($1,$2,$3,$4,0,0)`,[req.body.title,req.body.description,req.session.user.username,mediadata]);
+        await db.query(`insert into post(title,description,uid,media,likes,dislikes) values($1,$2,$3,$4,0,0)`,[req.body.title,req.body.description,currentuser,mediadata]);
        
     }
     else{
    
-        await db.query(`insert into post(title,description,uid,likes,dislikes) values($1,$2,$3,0,0)`,[req.body.title,req.body.description,req.session.user.username]);
+        await db.query(`insert into post(title,description,uid,likes,dislikes) values($1,$2,$3,0,0)`,[req.body.title,req.body.description,currentuser]);
     
     }res.redirect("/");
 }); 
