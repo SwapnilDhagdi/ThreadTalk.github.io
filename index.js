@@ -9,7 +9,7 @@ import multer from "multer";
 import fs from "fs";
 import http from "http";
 import dotenv from "dotenv";
-import connectRedis from "connect-redis";
+import * as connectRedis from "connect-redis";
 import redis from "redis";
 dotenv.config();
 const db = new pg.Client({
