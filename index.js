@@ -332,8 +332,8 @@ app.post("/signin",async (req,res)=>{
     }
     else
     {
-        req.session.user=result.rows[0];
-        currentuser=result.rows[0].username;
+       //req.session.user=result.rows[0];
+        currentuser=req.body.username;
         console.log("form info",req.body)
         result=await db.query(`select * from post`);
         const communities=await db.query("select * from community");
@@ -387,7 +387,7 @@ app.post("/submit",upload.single("media"),async (req,res)=>
             currentuser=result.rows[0].username;
             console.log(req.session.user);
             result =await db.query("select * from post");
-            const communities=await db.querry("select * from community");
+            const communities=await db.query("select * from community");
             res.render("index",{islogin:true,data:result.rows,community:communities});
         }        
     }
