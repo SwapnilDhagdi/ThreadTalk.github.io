@@ -806,12 +806,15 @@ a{
 }
 .pannel-contact,.pannel-about
 {
-    text-align: center;
+    display: flex;
+    gap :5px;
+    justify-content: center; 
     background-color: #181a1c;
     line-height: 30px;
     height: 30px;
     width: 100px;
     border-radius: 5px;
+
 }
 .title_item
 {

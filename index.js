@@ -83,7 +83,7 @@ io.on("connection",(socket)=>
     {
         console.log("id recieved at like",id);
         var result=await db.query(`select * from post where pid=$1 and uid=$2`,[id,currentuser]);
-
+        console.log(result.rows);
        var like=result.rows[0].likes;
        var dislike=result.rows[0].dislikes;
        console.log("earlier value",like,dislike);
@@ -104,6 +104,7 @@ io.on("connection",(socket)=>
         console.log("id recieved at dislike ",id);
      
         var result=await db.query(`select * from post where pid=$1 and uid=$2`,[id,currentuser]);
+        console.log(result.rows);
         var like=result.rows[0].likes;
         var dislike=result.rows[0].dislikes;
         console.log("earlier value",like,dislike);
@@ -119,22 +120,24 @@ io.on("connection",(socket)=>
         socket.emit("change",like,dislike,id);
     });
     socket.on("likes",async(id)=>{
-        console.log("id recieved ",id);
+        console.log("id recieved likes ",id);
+        console.log("length of likes ",(await db.query(`select * from reaction where pid=$1 and uid=$2`,[id,currentuser])).rows.length);
         if((await db.query(`select * from reaction where pid=$1 and uid=$2`,[id,currentuser])).rows.length == 0){
             var result=await db.query(`select * from post where pid=$1 and uid =$2 `,[id,currentuser]);
+            console.log("updated likes",result.rows);
             var like=result.rows[0].likes;
-            console.log("updated likes",like);
-
             like+=1;
             await db.query(`insert into reaction(uid,pid,react) values($1,$2,'like')`,[currentuser,id]);
             await db.query(`update post set likes=$1 where pid= $2 and uid=$3`,[like,id,currentuser]);
             socket.emit("change",result.rows[0].dislike,like,id);
+        }else{
+            console.log("not equal to 0 ");
         }
-    
+
     });
     socket.on("dislikes",async (id)=>
     {
-        console.log("id recieved ",id);
+        console.log("id 4 recieved ",id);
         if((await db.query(`select * from reaction where pid=$1`,[id])).rows.length ==0)
         {
             var result=await db.query(`select * from post where pid=$1 and uid=$2`,[id,currentuser]);
