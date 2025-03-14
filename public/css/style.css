@@ -59,7 +59,7 @@
     border-radius: 5px;
     height: 25px;
     width: 25px;
-   
+    cursor: pointer;
 }
 .upvote_img,.downvote_img
 {
@@ -750,6 +750,7 @@ a{
   height: 25px;
   border-radius: 2px;
   border: 1px solid blue;
+  cursor: pointer;
 }
 .notification_sidebar_content
 {
@@ -806,12 +807,15 @@ a{
 }
 .pannel-contact,.pannel-about
 {
-    text-align: center;
+    display: flex;
+    gap :5px;
+    justify-content: center; 
     background-color: #181a1c;
     line-height: 30px;
     height: 30px;
     width: 100px;
     border-radius: 5px;
+
 }
 .title_item
 {
@@ -958,9 +962,8 @@ communities_search:hover
 }
 .communities{
  
-  border: 1px solid white;
-  
-
+  border: 1px solid white;  
+  cursor:pointer;
   border-radius: 10px;
     padding: 8px 5px;
     margin: 10px 2px;
@@ -1508,8 +1511,17 @@ form input
   justify-content:space-between;
   width: 100%;
 }
+
+
 .account{
-background: url("../media/anime-himmel.gif");
+  background: url("../media/anime-himmel.gif");
+}
+.community_account{
+  background: url("../media/community.gif");
+  color: #191c1e;
+  height:10rem;
+}
+.account,.community_account{
 background-repeat: no-repeat;
 background-position: center;
 background-size:cover ;
@@ -1597,7 +1609,7 @@ background-repeat: no-repeat;
 animation: Rrotate infinite linear 10s;
 }
 
-.acc_description h1{
+.acc_description h1,.community_acc_description h1{
 
 font-weight: 700;
 
@@ -1606,7 +1618,7 @@ font-weight: 700;
 {
 
 }
-.acc_description 
+.acc_description,.community_acc_description
 {
 width: 100%;
 display: flex;

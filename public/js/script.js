@@ -1,7 +1,7 @@
 
 
 
-//document.querySelector(".sidebar").classList.add("toggle");
+
 const socket=io();
 
 window.onpageshow=function(event){
@@ -26,16 +26,92 @@ const post=document.querySelectorAll(".title");
 const community=document.querySelectorAll(".communities");
 console.log(like);
 
-// votes.forEach(element=>{
-//    console.log(element);
-//    element.querySelector(".upvotes").addEventListener("click",(event)=>{
 
-//       console.log(event.srcElement.parentElement.parentElement.id);
-//       socket.emit("like",event.srcElement.parentElement.parentElement.id); 
-//    });
-// });
+try{
+if(document.querySelector(".log").textContent.trim()=="Sign Up"){
+   console.log("true");
+   dislike.forEach(element=>{
+      element.disabled=true;
+      element.addEventListener("click",(event)=>{
+         alert("please signin first");
+      });
+   });
+   like.forEach(element=>{
+      element.disabled=true;
+      element.addEventListener("click",(event)=>{
+         alert("please Sign in first");
+      });
+   });
+   comment.forEach(element=>{
+      element.disabled=true;
+      element.addEventListener("click",(event)=>{
+         alert("please Sign in first");
+      });
+   });
 
-
+}else{
+   console.log("flase");
+   comment.forEach(element=>
+      {
+         element.addEventListener("click",(event)=>
+         {
+            const id=event.target.parentElement.parentElement.id;
+            window.location.href=`/load_post/${id}`;
+         });
+      }); 
+   dislike.forEach(element=>
+   {
+      element.addEventListener("click",(event)=>
+      {
+         if(!document.getElementById(event.srcElement.parentElement.parentElement.id).querySelector(".upvote").disabled)
+         {
+            if(!document.getElementById(event.srcElement.parentElement.parentElement.id).querySelector(".downvote").disabled){
+               socket.emit("dislikes",event.srcElement.parentElement.parentElement.id);
+               element.disabled=true;
+            }
+         }
+         else{
+            if(!element.disabled)
+            {
+               element.disabled=true;
+               socket.emit("dislike",event.srcElement.parentElement.parentElement.id);
+               document.getElementById(event.srcElement.parentElement.parentElement.id).querySelector(".upvote").disabled=false;
+            }
+         }
+     
+      });
+   });
+   
+   like.forEach(element => {
+      element.disabled=false;
+   
+      element.addEventListener("click",(event)=>
+      {
+         if(!document.getElementById(event.srcElement.parentElement.parentElement.id).querySelector(".downvote").disabled)
+         {
+            if(!document.getElementById(event.srcElement.parentElement.parentElement.id).querySelector(".upvote").disabled){
+               socket.emit("likes",event.srcElement.parentElement.parentElement.id);
+               element.disabled=true;
+   
+            }
+         }else{
+     
+            if(!element.disabled)
+               {
+                  console.log(event.srcElement.parentElement.parentElement.id);
+                  element.disabled=true;
+                  socket.emit("like",event.srcElement.parentElement.parentElement.id);
+                  document.getElementById(event.srcElement.parentElement.parentElement.id).querySelector(".downvote").disabled=false;
+               }
+         }
+      });
+   
+   });
+}
+}
+catch{
+   console.log("caught error");
+}
 post.forEach(element=>
 {
    element.addEventListener("click",(event)=>
@@ -44,74 +120,15 @@ post.forEach(element=>
       window.location.href=`/load_post/${id}`;
    });
 });
-comment.forEach(element=>
-   {
-      element.addEventListener("click",(event)=>
-      {
-         const id=event.target.parentElement.parentElement.id;
-         window.location.href=`/load_post/${id}`;
-      });
-   }); 
-dislike.forEach(element=>
-{
-   element.addEventListener("click",(event)=>
-   {
-      if(!document.getElementById(event.srcElement.parentElement.parentElement.id).querySelector(".upvote").disabled)
-      {
-         if(!document.getElementById(event.srcElement.parentElement.parentElement.id).querySelector(".downvote").disabled){
-            socket.emit("dislikes",event.srcElement.parentElement.parentElement.id);
-            element.disabled=true;
-         }
-      }
-      else{
-         //toggle
-         if(!element.disabled)
-         {
-            element.disabled=true;
-            socket.emit("dislike",event.srcElement.parentElement.parentElement.id);
-            document.getElementById(event.srcElement.parentElement.parentElement.id).querySelector(".upvote").disabled=false;
-         }
-      }
-  
-   });
-});
 
-like.forEach(element => {
-   element.disabled=false;
 
-   element.addEventListener("click",(event)=>
-   {
-      if(!document.getElementById(event.srcElement.parentElement.parentElement.id).querySelector(".downvote").disabled)
-      {
-         if(!document.getElementById(event.srcElement.parentElement.parentElement.id).querySelector(".upvote").disabled){
-            socket.emit("likes",event.srcElement.parentElement.parentElement.id);
-            element.disabled=true;
-
-         }
-      }else{
-         //toggle
-         if(!element.disabled)
-            {
-               console.log(event.srcElement.parentElement.parentElement.id);
-               element.disabled=true;
-               socket.emit("like",event.srcElement.parentElement.parentElement.id);
-               document.getElementById(event.srcElement.parentElement.parentElement.id).querySelector(".downvote").disabled=false;
-            }
-      }
-   });
-
-});
-
-// document.querySelector(".upvote").addEventListener("click",(event)=>
-// {
-//    console.log(event.target.id);
-// });
 document.querySelector(".nav-logo").addEventListener("click",async (event)=>
 {
    fetch("/home")
   .then(response => {
     if (response.ok) {
-      window.location.href = "/"; // Redirect to the page
+      window.location.href = "/";
+   
     } else {
       console.error("Failed to load page");
     }
@@ -148,7 +165,7 @@ function notification_toggle()
    }
 }
 
-// Attach the toggle function to the button
+
 document.querySelector(".notification_btn").addEventListener("click",notification_toggle);
 document.querySelector(".pannel-toggle").addEventListener("click", toggle);
 
@@ -177,19 +194,18 @@ searchInput.addEventListener("input", async (event) => {
 
       const suggestions = await response.json();
       console.log(suggestions);
-      suggestionList.innerHTML = ""; // Clear old suggestions
+      suggestionList.innerHTML = ""; 
 
-      // Populate suggestions
       
       suggestions.forEach((title) => {
         const listItem = document.createElement("li");
         listItem.textContent = title;
         listItem.classList.add("suggestion_item");
 
-        // Set value to input when suggestion is clicked
+      
         listItem.addEventListener("click", async () => {
           searchInput.value = title;
-          suggestionList.innerHTML = ""; // Clear suggestions
+          suggestionList.innerHTML = "";
         });
 
         suggestionList.appendChild(listItem);
@@ -198,7 +214,7 @@ searchInput.addEventListener("input", async (event) => {
       console.error("Error fetching suggestions:", error);
     }
   } else {
-    suggestionList.innerHTML = ""; // Clear suggestions when input is empty
+    suggestionList.innerHTML = "";
   }
 
 });

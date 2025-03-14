@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Thread Talk</title>
 
     <link rel="stylesheet" href="/css/style.css">
     <link
     href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
     rel="stylesheet"
     />
+    <link rel="icon" type="image/png" href="../media/logo.png"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
@@ -79,9 +80,9 @@
          
         </div>
     
-        <div class="account">
+        <div class="community_account">
            
-                <div class="acc_description">
+                <div class="community_acc_description">
                     <h2>
                         Community Name:-<%=community_data[0].name%>
                     </h2>
@@ -89,8 +90,6 @@
                         Description:-<%=community_data[0].description%>
                     </h3>
                 </div>  
-     
-           
         </div>
         <div class="account_posts-section">
             <% if(data.length==0){%>

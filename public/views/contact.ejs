@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Thread Talk</title>
 
     <link rel="stylesheet" href="/css/style.css">
     <link
     href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
     rel="stylesheet"
     />
+    <link rel="icon" type="image/png" href="../media/logo.png"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
@@ -74,11 +75,11 @@
             <a href="#">contact</a>
         </div>
         <%if(islogin){%>
-            <button onclick="location.href='./post'" class="btn btn_post">
+            <button onclick="location.href='./post'" class="btn btn_post log">
                 Create Post
              </button>
         <%}else{%>
-            <button onclick="location.href='./form'" class="btn btn_signin">
+            <button onclick="location.href='./form'" class="btn btn_signin log">
                 Sign Up
             </button>
         <%}%>

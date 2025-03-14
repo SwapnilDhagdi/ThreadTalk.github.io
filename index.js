@@ -81,12 +81,12 @@ io.on("connection",(socket)=>
 
     socket.on("like",async (id)=>
     {
-        console.log("id recieved at like",id);
-        var result=await db.query(`select * from post where pid=$1 and uid=$2`,[id,currentuser]);
-
-       var like=result.rows[0].likes;
-       var dislike=result.rows[0].dislikes;
-       console.log("earlier value",like,dislike);
+        console.log("1 id recieved at like",id);
+        var result=await db.query(`select * from post where pid=$1`,[id]);
+        console.log(result.rows);
+        var like=result.rows[0].likes;
+        var dislike=result.rows[0].dislikes;
+        console.log("earlier value",like,dislike);
         like+=1;
         if(dislike > 0)
         {
@@ -101,9 +101,9 @@ io.on("connection",(socket)=>
 
     socket.on("dislike",async (id)=>
     {
-        console.log("id recieved at dislike ",id);
+        console.log("2 id recieved at dislike ",id);
      
-        var result=await db.query(`select * from post where pid=$1 and uid=$2`,[id,currentuser]);
+        var result=await db.query(`select * from post where pid=$1`,[id]);
         var like=result.rows[0].likes;
         var dislike=result.rows[0].dislikes;
         console.log("earlier value",like,dislike);
@@ -119,30 +119,29 @@ io.on("connection",(socket)=>
         socket.emit("change",like,dislike,id);
     });
     socket.on("likes",async(id)=>{
-        console.log("id recieved ",id);
+        console.log(" 3 id recieved ",id);
         if((await db.query(`select * from reaction where pid=$1 and uid=$2`,[id,currentuser])).rows.length == 0){
-            var result=await db.query(`select * from post where pid=$1 and uid =$2 `,[id,currentuser]);
+            var result=await db.query(`select * from post where pid=$1`,[id]);
             var like=result.rows[0].likes;
-            console.log("updated likes",like);
-
             like+=1;
+            console.log("updated likes",like);
             await db.query(`insert into reaction(uid,pid,react) values($1,$2,'like')`,[currentuser,id]);
-            await db.query(`update post set likes=$1 where pid= $2 and uid=$3`,[like,id,currentuser]);
+            await db.query(`update post set likes=$1 where pid= $2`,[like,id]);
             socket.emit("change",result.rows[0].dislike,like,id);
         }
     
     });
     socket.on("dislikes",async (id)=>
     {
-        console.log("id recieved ",id);
+        console.log("4 id recieved ",id);
         if((await db.query(`select * from reaction where pid=$1`,[id])).rows.length ==0)
         {
-            var result=await db.query(`select * from post where pid=$1 and uid=$2`,[id,currentuser]);
+            var result=await db.query(`select * from post where pid=$1`,[id]);
             var dislike=result.rows[0].dislikes;
             console.log("updated dislike",dislike);
             dislike+=1;
             await db.query(`insert into reaction(uid,pid,react) values($1,$2,'dislike')`,[currentuser,id]);
-            await db.query(`update post set dislikes=$1 where pid= $2 and uid=$3`,[dislike,id,currentuser]);
+            await db.query(`update post set dislikes=$1 where pid= $2`,[dislike,id]);
             socket.emit("change",result.rows[0].likes,dislike,id);
         }        
     });
@@ -253,18 +252,17 @@ app.post("/community_post",post.single("media"),async(req,res)=>{
             const binary=fs.readFileSync(req.file.path);
             const mediabase64=binary.toString("base64");
             const mediadata=`data:image/jpg;base64,${mediabase64}`;
-            await db.query(`insert into post(title,description,uid,media,likes,dislikes) values($1,$2,$3,$4,0,0)`,[req.body.title,req.body.description,currentuser,mediadata]);
-           
+            await db.query(`insert into post(title,description,uid,media,likes,dislikes,cid) values($1,$2,$3,$4,0,0,$5)`,[req.body.title,req.body.description,currentuser,mediadata,currentcommunity]);
         }
         else{
        
-            await db.query(`insert into post(title,description,uid,cid,likes,dislike) values($1,$2,$3,$4,0,0)`,[req.body.title,req.body.description,currentuser,currentcommunity]);
+            await db.query(`insert into post(title,description,uid,cid,likes,dislikes) values($1,$2,$3,$4,0,0)`,[req.body.title,req.body.description,currentuser,currentcommunity]);
         
         }
         const community=await db.query(`select * from community where community_id=$1`,[currentcommunity]);
-        console.log(community.rows);
+        console.log("in community_post",community.rows);
         const post=await db.query(`select * from post where cid=$1`,[currentcommunity]);
-       
+        console.log("post displayed on page",post.rows);
         res.render("community_place",{community_data:community.rows,data:post.rows});
 });
 app.get("/community_place/:cid",async(req,res)=>{
@@ -272,8 +270,9 @@ app.get("/community_place/:cid",async(req,res)=>{
     console.log("in community place");
     const community=await db.query(`select * from community where community_id=$1`,[req.params.cid.substring(1)]);
     console.log(community.rows);
-    const post=await db.query(`select * from post where cid=$1`,[req.params.cid.substring(1)]);
     currentcommunity=req.params.cid.substring(1);
+    const post=await db.query(`select * from post where cid=$1`,[req.params.cid.substring(1)]);
+    console.log("post on community ",currentcommunity,post.rows);
     res.render("community_place",{community_data:community.rows,data:post.rows});
 });
 app.get("/community",(req,res)=>{
@@ -387,7 +386,7 @@ app.post("/submit",upload.single("media"),async (req,res)=>
             currentuser=result.rows[0].username;
             console.log(req.session.user);
             result =await db.query("select * from post");
-            const communities=await db.querry("select * from community");
+            const communities=await db.query("select * from community");
             res.render("index",{islogin:true,data:result.rows,community:communities});
         }        
     }
