@@ -24,12 +24,10 @@ const votes=document.querySelectorAll(".Votes");
 const comment=document.querySelectorAll(".comment");
 const post=document.querySelectorAll(".title");
 const community=document.querySelectorAll(".communities");
-console.log(like);
 
 
 try{
 if(document.querySelector(".log").textContent.trim()=="Sign Up"){
-   console.log("true");
    dislike.forEach(element=>{
       element.disabled=true;
       element.addEventListener("click",(event)=>{
@@ -50,7 +48,6 @@ if(document.querySelector(".log").textContent.trim()=="Sign Up"){
    });
 
 }else{
-   console.log("flase");
    comment.forEach(element=>
       {
          element.addEventListener("click",(event)=>
@@ -98,7 +95,6 @@ if(document.querySelector(".log").textContent.trim()=="Sign Up"){
      
             if(!element.disabled)
                {
-                  console.log(event.srcElement.parentElement.parentElement.id);
                   element.disabled=true;
                   socket.emit("like",event.srcElement.parentElement.parentElement.id);
                   document.getElementById(event.srcElement.parentElement.parentElement.id).querySelector(".downvote").disabled=false;
@@ -110,7 +106,7 @@ if(document.querySelector(".log").textContent.trim()=="Sign Up"){
 }
 }
 catch{
-   console.log("caught error");
+   console.log("Caught error");
 }
 post.forEach(element=>
 {
@@ -179,7 +175,6 @@ document.querySelector(".Communities_search").addEventListener("keypress",async 
       const query=document.querySelector(".Communities_search").value;
       const response=await fetch(`/search_community_name?q=${encodeURIComponent(query)}`);
       const res=await response.json();
-      console.log("id got",res[0].community_id);
       window.location.href=`/community_place/c${res[0].community_id}`;
    }
 });
@@ -193,7 +188,6 @@ searchInput.addEventListener("input", async (event) => {
       if (!response.ok) throw new Error("Failed to fetch suggestions");
 
       const suggestions = await response.json();
-      console.log(suggestions);
       suggestionList.innerHTML = ""; 
 
       
@@ -248,9 +242,7 @@ title_input.addEventListener("input", async (event)=>
    }
 });
 community.forEach(element =>{
-   console.log("event added");
    element.addEventListener("click",(event)=>{
-      console.log(event.target.id);
      window.location.href=`/community_place/${event.target.id}`;
    });
 });
@@ -265,7 +257,6 @@ document.querySelector(".comment_button").addEventListener("click",(event)=>
          document.querySelector(".comment_input").placeholder="please enter Comment";
       }
       else{
-      console.log("comment_button clicked",comment,id);
       document.querySelector(".comment_input").value="";
       document.querySelector(".comment_input").placeholder="Comment added";
       socket.emit("add",comment,id);
@@ -273,7 +264,6 @@ document.querySelector(".comment_button").addEventListener("click",(event)=>
    });
  
    socket.on("change",(like,dislike,id)=>{
-      console.log("changing");
       document.getElementById(id).querySelector(".upvote_count").textContent=like;
       document.getElementById(id).querySelector(".downvote_count").textContent=dislike; 
    });

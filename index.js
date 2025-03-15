@@ -81,18 +81,15 @@ io.on("connection",(socket)=>
 
     socket.on("like",async (id)=>
     {
-        console.log("1 id recieved at like",id);
         var result=await db.query(`select * from post where pid=$1`,[id]);
-        console.log(result.rows);
         var like=result.rows[0].likes;
         var dislike=result.rows[0].dislikes;
-        console.log("earlier value",like,dislike);
         like+=1;
         if(dislike > 0)
         {
             dislike-=1;
         }
-        console.log("after update",like,dislike); 
+
         await db.query(`update reaction set react='like' where pid=$1 and uid=$2 `,[id,currentuser]);
         await db.query(`update post set likes=$1 ,dislikes=$2 where pid= $3 and uid=$4`,[like,dislike,id,currentuser]);
        
@@ -101,30 +98,26 @@ io.on("connection",(socket)=>
 
     socket.on("dislike",async (id)=>
     {
-        console.log("2 id recieved at dislike ",id);
+
      
         var result=await db.query(`select * from post where pid=$1`,[id]);
         var like=result.rows[0].likes;
         var dislike=result.rows[0].dislikes;
-        console.log("earlier value",like,dislike);
         if(like>0)
         {
             like-=1;
         }   
         dislike+=1;
-        console.log("after update",like,dislike); 
         await db.query(`update reaction set react='dislike' where pid=$1 and uid=$2`,[id,currentuser]);
         await db.query(`update post set likes=$1, dislikes=$2 where pid= $3 and uid=$4 `,[like,dislike,id,currentuser]);
     
         socket.emit("change",like,dislike,id);
     });
     socket.on("likes",async(id)=>{
-        console.log(" 3 id recieved ",id);
         if((await db.query(`select * from reaction where pid=$1 and uid=$2`,[id,currentuser])).rows.length == 0){
             var result=await db.query(`select * from post where pid=$1`,[id]);
             var like=result.rows[0].likes;
             like+=1;
-            console.log("updated likes",like);
             await db.query(`insert into reaction(uid,pid,react) values($1,$2,'like')`,[currentuser,id]);
             await db.query(`update post set likes=$1 where pid= $2`,[like,id]);
             socket.emit("change",result.rows[0].dislike,like,id);
@@ -133,12 +126,10 @@ io.on("connection",(socket)=>
     });
     socket.on("dislikes",async (id)=>
     {
-        console.log("4 id recieved ",id);
         if((await db.query(`select * from reaction where pid=$1`,[id])).rows.length ==0)
         {
             var result=await db.query(`select * from post where pid=$1`,[id]);
             var dislike=result.rows[0].dislikes;
-            console.log("updated dislike",dislike);
             dislike+=1;
             await db.query(`insert into reaction(uid,pid,react) values($1,$2,'dislike')`,[currentuser,id]);
             await db.query(`update post set dislikes=$1 where pid= $2`,[dislike,id]);
@@ -146,7 +137,6 @@ io.on("connection",(socket)=>
         }        
     });
     socket.on("add",async(comment,id)=>{
-        console.log("comment added and id ",comment,id);
         await db.query(`insert into comment_section(username,comment,pid) values($1,$2,$3)`,[currentuser,comment,id]);
     });
 });
@@ -158,7 +148,6 @@ app.get("/",async (req, res) => {
     if(req.session.user)
     {
         res.render("index",{islogin:true,data:result.rows,community:communities.rows});
-        console.log(result.rows);
     }
     else
     {
@@ -171,17 +160,15 @@ app.get("/post",(req,res)=>
 });
 app.get("/load_post/:id",async (req,res)=>
 {
-    console.log(req.params.id);
     const post=await db.query(`select * from post where pid=$1`,[req.params.id]);
     const comment=await db.query(`select username,comment from comment_section where pid=${req.params.id}`);
-    console.log("Comment section content",comment.rows);
     res.render("user_post",{data:post.rows,comments:comment.rows});
 });
 
 app.get("/myaccount",async (req,res)=>
 {
     if (!req.session.user) {
-        console.log("Not found"); // Redirect to login if session is empty
+        console.log("Not found");
     }
     const result=await db.query(`select * from post join ruser on  post.uid=ruser.username where ruser.username=$1`,[currentuser]);
     const file=await db.query(`select avatar from ruser where username=$1`,[currentuser]);
@@ -243,7 +230,6 @@ app.get("/logout",async (req,res)=>
    });
 });
 app.get("/c_post",(req,res)=>{
-    console.log("to post");
     res.render("community_post");
 });
 app.post("/community_post",post.single("media"),async(req,res)=>{
@@ -260,19 +246,13 @@ app.post("/community_post",post.single("media"),async(req,res)=>{
         
         }
         const community=await db.query(`select * from community where community_id=$1`,[currentcommunity]);
-        console.log("in community_post",community.rows);
         const post=await db.query(`select * from post where cid=$1`,[currentcommunity]);
-        console.log("post displayed on page",post.rows);
         res.render("community_place",{community_data:community.rows,data:post.rows});
 });
 app.get("/community_place/:cid",async(req,res)=>{
-    console.log("loading this",req.params.cid);
-    console.log("in community place");
     const community=await db.query(`select * from community where community_id=$1`,[req.params.cid.substring(1)]);
-    console.log(community.rows);
     currentcommunity=req.params.cid.substring(1);
     const post=await db.query(`select * from post where cid=$1`,[req.params.cid.substring(1)]);
-    console.log("post on community ",currentcommunity,post.rows);
     res.render("community_place",{community_data:community.rows,data:post.rows});
 });
 app.get("/community",(req,res)=>{
@@ -280,7 +260,6 @@ app.get("/community",(req,res)=>{
 });
 
 app.post("/community",async(req,res)=>{
-    console.log("data recieveed",req.body);
     const name=req.body.name;
     const description=req.body.description;
     await db.query(`insert into community(username,name,description) values($1,$2,$3)`,[currentuser,name,description]);
@@ -288,10 +267,8 @@ app.post("/community",async(req,res)=>{
 });
 app.get("/search_community",async(req,res)=>{
     const query=req.query.q;
-    console.log("query get",query);
     try{
         const result=await db.query(`select name from community where LOWER(name) like $1 limit 6`,[`%${query.toLowerCase()}%`]);
-        console.log("result get ",result.rows);
         res.json(result.rows.map(row=>row.name));
     }
     catch(error){
@@ -301,7 +278,6 @@ app.get("/search_community",async(req,res)=>{
 
 });
 app.get("/search_community_name",async (req,res)=>{
-        console.log("sending data",(await db.query(`select community_id from community where name=$1`,[req.query.q])).rows);
         const result=(await db.query(`select community_id from community where name=$1`,[req.query.q])).rows
         res.json(result);
 });
@@ -333,7 +309,6 @@ app.post("/signin",async (req,res)=>{
     {
         req.session.user=result.rows[0];
         currentuser=result.rows[0].username;
-        console.log("form info",req.body)
         result=await db.query(`select * from post`);
         const communities=await db.query("select * from community");
         res.render("index",{islogin:true,data:result.rows,community:communities.rows});
@@ -377,14 +352,11 @@ app.post("/submit",upload.single("media"),async (req,res)=>
         }
         else
         {
-            const file_data=fs.readFileSync(req.file.path);
-            console.log(file_data);
-          
+            const file_data=fs.readFileSync(req.file.path);      
             await db.query(`insert into ruser(email,passwords,username,avatar) values($1,$2,$3,$4);`,[req.body.email,req.body.password,req.body.username,file_data]);
             var result=await db.query(`select * from ruser where email=$1 and username=$2 and passwords=$3`,[req.body.email,req.body.username,req.body.password]);
             req.session.user=result.rows[0];
             currentuser=result.rows[0].username;
-            console.log(req.session.user);
             result =await db.query("select * from post");
             const communities=await db.query("select * from community");
             res.render("index",{islogin:true,data:result.rows,community:communities});
@@ -417,7 +389,6 @@ async function Username(data)
 
     if(UsernameExists)
     {
-        console.log("Username exists")
         return true;
     }
     return false;
@@ -428,7 +399,6 @@ async function Email(data)
     const EmailExists=email.rows.some(element=>element.email===data["email"]);
     if(EmailExists)
     {
-        console.log("email Exists");
         return true;
     }
     return false;
