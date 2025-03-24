@@ -67,37 +67,37 @@ Open in browser
 Navigate to http://localhost:3000 and explore ThreadTalk!
 
 🔐 Authentication & Security
-Passwords are hashed (bcrypt).
+  Passwords are hashed (bcrypt).
 
-Protected routes with middleware to ensure authenticated access.
+  Protected routes with middleware to ensure authenticated access.
 
 ✨ What I Learned
-Building full-stack applications with Node.js and PostgreSQL.
+  Building full-stack applications with Node.js and PostgreSQL.
 
-Structuring Express applications with controllers and middleware.
+  Structuring Express applications with controllers and middleware.
 
-Designing relational databases to manage community and post data.
+  Designing relational databases to manage community and post data.
 
-Enhancing user experience through simple frontend design.
+  Enhancing user experience through simple frontend design.
 
-Debugging, lots of debugging! 😄
+  Debugging, lots of debugging! 😄
 
 🚀 Future Improvements
-Add real-time updates using WebSockets.
+  Add real-time updates using WebSockets.
 
-Improve UI/UX with modern frameworks like React.
+  Improve UI/UX with modern frameworks like React.
 
-Add comment functionality on posts.
+  Add comment functionality on posts.
 
-Implement user avatars and profiles.
+  Implement user avatars and profiles.
 
-Notifications & activity feeds.
+  Notifications & activity feeds.
 
 🙌 Contributing
-Contributions are welcome! If you find bugs or have suggestions, feel free to open an issue or pull request.
+  Contributions are welcome! If you find bugs or have suggestions, feel free to open an issue or pull request.
 
 📄 License
-This project is licensed under the MIT License.
+  This project is licensed under the MIT License.
 
 🔗 Links
-Project Repository: ThreadTalk GitHub
+  Project Repository: ThreadTalk GitHub
