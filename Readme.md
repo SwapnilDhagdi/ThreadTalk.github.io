@@ -22,14 +22,11 @@ Whether you're starting a niche group, sharing your thoughts, or just browsing, 
 🛠️ Tech Stack
   Frontend
     HTML
-
     CSS
-
     JavaScript
 
   Backend
     Node.js
-
     Express.js
 
   Database
